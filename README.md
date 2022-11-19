@@ -9,3 +9,5 @@ We select the best augmentation hyperparameter by cross validation in this versi
 ## Test time training on ILI are [here](./Test_time_Training.md)
 
 ## Results for keeping 10 dominant frequency components are [here](./Keep_Dominant_result.md)
+
+## Main results that selected using cross validation are [here](./Main_results_cross_validation.md)
