@@ -1,4 +1,4 @@
-# Results for LightTS, Film and SCINet
+# Results for LightTS, Film
 
 |             |         | LightTS  |          |         | Film     |          |         |
 |-------------|---------|----------|----------|---------|----------|----------|---------|
