@@ -1,4 +1,4 @@
-# Results for keeping 10 frequency components with largest amplitude
+# Results for keeping 10 frequency components with largest amplitude on ETTh1 Dataset
 
 |                |     Horizon      | Dlinear | FEDFormer | Film  | Autoformer | LightTS |
 |-------------------------|---------|-----------|-------|------------|---------|-------|
