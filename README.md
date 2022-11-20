@@ -13,4 +13,6 @@
 
 ## Main results that selected using cross validation are [here](./Main_results_cross_validation.md)
 
+## Results for time-domain augmentation on both look-back window and horizon are [here](./Augment_both.md)
+
 ## Standard Deviation of the improvement on DLinear are [here](./DLinear_Improvement_STD.md)
