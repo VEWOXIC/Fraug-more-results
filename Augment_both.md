@@ -1,4 +1,4 @@
-# Results for adding time-domain augmentation on both look-back window and horizon
+# Results for adding time-domain augmentation on both look-back window and horizon on ETTh1 Dataset
 
 | Method     | Origin    | Noise | Mask-Rand. | Mask-Seg. | Flipping  | Warping   |
 |------------|-----------|-------|------------|-----------|-----------|-----------|
