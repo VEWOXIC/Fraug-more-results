@@ -1,6 +1,6 @@
 # Fraug-more-results
 
-- We select the best augmentation hyperparameter by cross validation in this version! 
+- We select the best augmentation hyperparameter by cross validation. 
 - Best results are marked in **bold**. 
 
 ## Additional results for New models are [here](./New_models.md)
