@@ -97,11 +97,13 @@ parser.add_argument('--aug_method', type=str, default='f_mask', help='f_mask: Fr
 parser.add_argument('--aug_rate', type=float, default=0.5, help='mask/mix rate')
 parser.add_argument('--in_batch_augmentation', action='store_true', help='Augmentation in Batch (save memory cost)', default=False)
 parser.add_argument('--in_dataset_augmentation', action='store_true', help='Augmentation in Dataset', default=False)
+parser.add_argument('--closer_data_aug_more', action='store_true', help='Augment times increase for data closer to test set', default=False)
 parser.add_argument('--data_size', type=float, default=1, help='size of dataset, i.e, 0.01 represents uses 1 persent samples in the dataset')
 parser.add_argument('--aug_data_size', type=int, default=0, help='size of augmented data, i.e, 1 means double the size of dataset')
 
 # continue learning
 parser.add_argument('--testset_div', type=int, default=2, help='Division of dataset')
+parser.add_argument('--test_time_train', type=bool, default=True, help='Affect data division')
 
 args = parser.parse_args()
 

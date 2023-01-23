@@ -29,13 +29,14 @@ parser.add_argument('--seq_len', type=int, default=96, help='input sequence leng
 parser.add_argument('--label_len', type=int, default=48, help='start token length')
 parser.add_argument('--pred_len', type=int, default=96, help='prediction sequence length')
 
+
 # DLinear
 parser.add_argument('--individual', action='store_true', default=False, help='DLinear: a linear layer for each variate(channel) individually')
 
 # LightTS
 parser.add_argument('--chunk_size', type=int, default=40, help='LightTS')
 
-# Film
+#Film
 parser.add_argument('--ab', type=int, default=2, help='ablation version')
 
 # SCINet
@@ -85,16 +86,19 @@ parser.add_argument('--gpu', type=int, default=0, help='gpu')
 parser.add_argument('--use_multi_gpu', action='store_true', help='use multiple gpus', default=False)
 parser.add_argument('--devices', type=str, default='0,1,2,3', help='device ids of multile gpus')
 parser.add_argument('--test_flop', action='store_true', default=False, help='See utils/tools for usage')
-parser.add_argument('--seed', type=int, default=2021, help='random seed')
 
 # Augmentation
 parser.add_argument('--aug_method', type=str, default='f_mask', help='f_mask: Frequency Masking, f_mix: Frequency Mixing')
 parser.add_argument('--aug_rate', type=float, default=0.5, help='mask/mix rate')
 parser.add_argument('--in_batch_augmentation', action='store_true', help='Augmentation in Batch (save memory cost)', default=False)
 parser.add_argument('--in_dataset_augmentation', action='store_true', help='Augmentation in Dataset', default=False)
+parser.add_argument('--closer_data_aug_more', action='store_true', help='Augment times increase for data closer to test set', default=False)
 parser.add_argument('--data_size', type=float, default=1, help='size of dataset, i.e, 0.01 represents uses 1 persent samples in the dataset')
 parser.add_argument('--aug_data_size', type=int, default=1, help='size of augmented data, i.e, 1 means double the size of dataset')
+parser.add_argument('--seed', type=int, default=2021, help='random seed')
 parser.add_argument('--wo_original_set', action='store_true', help='without original train set')
+parser.add_argument('--test_time_train', type=bool, default=False, help='Affect data division')
+
 
 args = parser.parse_args()
 

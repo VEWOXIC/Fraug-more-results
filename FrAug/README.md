@@ -24,18 +24,18 @@ mkdir dataset
 ### Original performance of models
 We provide scripts to facilitate reproducing main experiment results in our paper.
 
-You can get the original performances of DLinear by running scripts in `scripts/original/DLinear`. For example, to get the original performance(without augmentations) of DLinear in ETTh1, you can run
+You can get the Original performances of DLinear by running scripts in `scripts/Original/DLinear`. For example, to get the original performance(without augmentations) of DLinear in ETTh1, you can run
 
 ```
-sh scripts/original/DLinear/etth1.sh
+sh scripts/Original/DLinear/etth1.sh
 ```
 
-For FEDformer, Autoformer and Informer, you can use scripts: `scripts/original/former/Formers_Long.sh`.  For LightTS, the script is `scripts/original/LightTS/lightTS.sh`.
+For FEDformer, Autoformer and Informer, you can use scripts: `scripts/Original/former/Formers_Long.sh`.  For LightTS, the script is `scripts/Original/LightTS/lightTS.sh`.
 
 ### Performance of models with FrAug
 This experiment shows the performance of model with FrAug.
 
-For DLinear, you can run the scripts in `scripts/FrAug/DLinear`. For FEDformer, Autoformer and Informer, the script is `scripts/FrAug/former/Formers_Long.sh`. For LightTS, the script is `scripts/FrAug/LightTS/lightTS.sh`.
+For DLinear, you can run the scripts in `scripts/LongForecast/DLinear`. For FEDformer, Autoformer and Informer, the script is `scripts/FrAug/former/Formers_Long.sh`. For LightTS, the script is `scripts/FrAug/LightTS/lightTS.sh`.
 
 There are few hyperparameters in this part:
 | Parameter      |                              Interpretation                          |
@@ -59,7 +59,7 @@ There are few hyperparameters in this part:
 ### Test time training
 This experiment shows the performance of model with test time training. We divide the test set to several parts. Since in real life, testing data comes sequentially by time. Therefore, after testing on one part, we can use the data to retrain the model for testing in the future part. However, newly add training data from test set can have little impact on the model. We can use FrAug to augment the new data to increase its importance.
 
-Scripts can be found in `scripts/Continue`.
+Scripts can be found in `scripts/TestTime`.
 
 There are few hyperparameters in this part:
 | Parameter      |                              Interpretation                          |

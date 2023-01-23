@@ -40,7 +40,9 @@ class Dataset_ETT_hour(Dataset):
         self.data_path = data_path
         self.__read_data__()
         self.collect_all_data()
-
+        if self.args.in_dataset_augmentation and self.set_type==0:
+            self.data_augmentation()
+        
     def __read_data__(self):
         self.scaler = StandardScaler()
         df_raw = pd.read_csv(os.path.join(self.root_path,
@@ -48,6 +50,11 @@ class Dataset_ETT_hour(Dataset):
 
         border1s = [0, 12 * 30 * 24 - self.seq_len, 12 * 30 * 24 + 4 * 30 * 24 - self.seq_len]
         border2s = [12 * 30 * 24, 12 * 30 * 24 + 4 * 30 * 24, 12 * 30 * 24 + 8 * 30 * 24]
+
+        if self.args.test_time_train:
+            border1s = [0, 18 * 30 * 24 - self.seq_len, 20 * 30 * 24]
+            border2s = [18 * 30 * 24, 20 * 30 * 24, 20 * 30 * 24]
+
         border1 = border1s[self.set_type]
         border2 = border2s[self.set_type]
 
@@ -79,9 +86,17 @@ class Dataset_ETT_hour(Dataset):
         self.data_x = data[border1:border2]
         self.data_y = data[border1:border2]
         self.data_stamp = data_stamp
+
     
     def regenerate_augmentation_data(self):
         self.collect_all_data()
+        self.data_augmentation()
+
+    def reload_data(self, x_data, y_data, x_time, y_time):
+        self.x_data = x_data
+        self.y_data = y_data
+        self.x_time = x_time
+        self.y_time = y_time
 
     def collect_all_data(self):
         self.x_data = []
@@ -101,23 +116,28 @@ class Dataset_ETT_hour(Dataset):
                 self.x_time.append(self.data_stamp[s_begin:s_end]) 
                 self.y_time.append(self.data_stamp[r_begin:r_end])
 
+    def data_augmentation(self):
         origin_len = len(self.x_data)
-        if self.args.in_dataset_augmentation and self.set_type==0:
-            for i in range(origin_len):
-                for _ in range(self.args.aug_data_size):
-                    aug = augmentation('dataset')
-                    if self.args.aug_method == 'f_mask':
-                        x,y = aug.freq_dropout(self.x_data[i],self.y_data[i],dropout_rate=self.args.aug_rate)
-                    elif self.args.aug_method == 'f_mix':
-                        rand = float(np.random.random(1))
-                        i2 = int(rand*len(self.x_data))
-                        x,y = aug.freq_mix(self.x_data[i],self.y_data[i],self.x_data[i2],self.y_data[i2],dropout_rate=self.args.aug_rate)
-                    else: 
-                        raise ValueError
-                    self.x_data.append(x)
-                    self.y_data.append(y)
-                    self.x_time.append(self.x_time[i]) 
-                    self.y_time.append(self.y_time[i])
+        if not self.args.closer_data_aug_more:
+            aug_size = [self.args.aug_data_size for i in range(origin_len)]
+        else:
+            aug_size = [int(self.args.aug_data_size * i/origin_len) + 1 for i in range(origin_len)]
+
+        for i in range(origin_len):
+            for _ in range(aug_size[i]):
+                aug = augmentation('dataset')
+                if self.args.aug_method == 'f_mask':
+                    x,y = aug.freq_dropout(self.x_data[i],self.y_data[i],dropout_rate=self.args.aug_rate)
+                elif self.args.aug_method == 'f_mix':
+                    rand = float(np.random.random(1))
+                    i2 = int(rand*len(self.x_data))
+                    x,y = aug.freq_mix(self.x_data[i],self.y_data[i],self.x_data[i2],self.y_data[i2],dropout_rate=self.args.aug_rate)
+                else: 
+                    raise ValueError
+                self.x_data.append(x)
+                self.y_data.append(y)
+                self.x_time.append(self.x_time[i]) 
+                self.y_time.append(self.y_time[i])
 
     def __getitem__(self, index):
         seq_x = self.x_data[index]
@@ -159,6 +179,8 @@ class Dataset_ETT_minute(Dataset):
         self.data_path = data_path
         self.__read_data__()
         self.collect_all_data()
+        if self.args.in_dataset_augmentation and self.set_type==0:
+            self.data_augmentation()
 
     def __read_data__(self):
         self.scaler = StandardScaler()
@@ -167,6 +189,11 @@ class Dataset_ETT_minute(Dataset):
 
         border1s = [0, 12 * 30 * 24 * 4 - self.seq_len, 12 * 30 * 24 * 4 + 4 * 30 * 24 * 4 - self.seq_len]
         border2s = [12 * 30 * 24 * 4, 12 * 30 * 24 * 4 + 4 * 30 * 24 * 4, 12 * 30 * 24 * 4 + 8 * 30 * 24 * 4]
+
+        if self.args.test_time_train:
+            border1s = [0, 18 * 30 * 24 * 4 - self.seq_len, 20 * 30 * 24 * 4]
+            border2s = [18 * 30 * 24 * 4, 20 * 30 * 24 * 4, 20 * 30 * 24 * 4]
+
         border1 = border1s[self.set_type]
         border2 = border2s[self.set_type]
 
@@ -203,6 +230,13 @@ class Dataset_ETT_minute(Dataset):
 
     def regenerate_augmentation_data(self):
         self.collect_all_data()
+        self.data_augmentation()
+
+    def reload_data(self, x_data, y_data, x_time, y_time):
+        self.x_data = x_data
+        self.y_data = y_data
+        self.x_time = x_time
+        self.y_time = y_time
 
     def collect_all_data(self):
         self.x_data = []
@@ -222,23 +256,28 @@ class Dataset_ETT_minute(Dataset):
                 self.x_time.append(self.data_stamp[s_begin:s_end]) 
                 self.y_time.append(self.data_stamp[r_begin:r_end])
 
+    def data_augmentation(self):
         origin_len = len(self.x_data)
-        if self.args.in_dataset_augmentation and self.set_type==0:
-            for i in range(origin_len):
-                for _ in range(self.args.aug_data_size):
-                    aug = augmentation('dataset')
-                    if self.args.aug_method == 'f_mask':
-                        x,y = aug.freq_dropout(self.x_data[i],self.y_data[i],dropout_rate=self.args.aug_rate)
-                    elif self.args.aug_method == 'f_mix':
-                        rand = float(np.random.random(1))
-                        i2 = int(rand*len(self.x_data))
-                        x,y = aug.freq_mix(self.x_data[i],self.y_data[i],self.x_data[i2],self.y_data[i2],dropout_rate=self.args.aug_rate)
-                    else: 
-                        raise ValueError
-                    self.x_data.append(x)
-                    self.y_data.append(y)
-                    self.x_time.append(self.x_time[i]) 
-                    self.y_time.append(self.y_time[i])
+        if not self.args.closer_data_aug_more:
+            aug_size = [self.args.aug_data_size for i in range(origin_len)]
+        else:
+            aug_size = [int(self.args.aug_data_size * i/origin_len) + 1 for i in range(origin_len)]
+
+        for i in range(origin_len):
+            for _ in range(aug_size[i]):
+                aug = augmentation('dataset')
+                if self.args.aug_method == 'f_mask':
+                    x,y = aug.freq_dropout(self.x_data[i],self.y_data[i],dropout_rate=self.args.aug_rate)
+                elif self.args.aug_method == 'f_mix':
+                    rand = float(np.random.random(1))
+                    i2 = int(rand*len(self.x_data))
+                    x,y = aug.freq_mix(self.x_data[i],self.y_data[i],self.x_data[i2],self.y_data[i2],dropout_rate=self.args.aug_rate)
+                else: 
+                    raise ValueError
+                self.x_data.append(x)
+                self.y_data.append(y)
+                self.x_time.append(self.x_time[i]) 
+                self.y_time.append(self.y_time[i])
 
     def __getitem__(self, index):
         seq_x = self.x_data[index]
@@ -281,6 +320,8 @@ class Dataset_Custom(Dataset):
         self.data_path = data_path
         self.__read_data__()
         self.collect_all_data()
+        if self.args.in_dataset_augmentation and self.set_type==0:
+            self.data_augmentation()
 
     def __read_data__(self):
         self.scaler = StandardScaler()
@@ -299,6 +340,12 @@ class Dataset_Custom(Dataset):
         num_vali = len(df_raw) - num_train - num_test
         border1s = [0, num_train - self.seq_len, len(df_raw) - num_test - self.seq_len]
         border2s = [num_train, num_train + num_vali, len(df_raw)]
+
+        if self.args.test_time_train:
+            num_train = int(len(df_raw) * 0.9)
+            border1s = [0, num_train - self.seq_len, len(df_raw)]
+            border2s = [num_train, len(df_raw), len(df_raw)]
+        
         border1 = border1s[self.set_type]
         border2 = border2s[self.set_type]
 
@@ -335,7 +382,14 @@ class Dataset_Custom(Dataset):
 
     def regenerate_augmentation_data(self):
         self.collect_all_data()
+        self.data_augmentation()
 
+    def reload_data(self, x_data, y_data, x_time, y_time):
+        self.x_data = x_data
+        self.y_data = y_data
+        self.x_time = x_time
+        self.y_time = y_time
+        
     def collect_all_data(self):
         self.x_data = []
         self.y_data = []
@@ -353,24 +407,29 @@ class Dataset_Custom(Dataset):
                 self.y_data.append(self.data_y[r_begin:r_end])
                 self.x_time.append(self.data_stamp[s_begin:s_end]) 
                 self.y_time.append(self.data_stamp[r_begin:r_end])
-
+        
+    def data_augmentation(self):
         origin_len = len(self.x_data)
-        if self.args.in_dataset_augmentation and self.set_type==0:
-            for i in range(origin_len):
-                for _ in range(self.args.aug_data_size):
-                    aug = augmentation('dataset')
-                    if self.args.aug_method == 'f_mask':
-                        x,y = aug.freq_dropout(self.x_data[i],self.y_data[i],dropout_rate=self.args.aug_rate)
-                    elif self.args.aug_method == 'f_mix':
-                        rand = float(np.random.random(1))
-                        i2 = int(rand*len(self.x_data))
-                        x,y = aug.freq_mix(self.x_data[i],self.y_data[i],self.x_data[i2],self.y_data[i2],dropout_rate=self.args.aug_rate)
-                    else: 
-                        raise ValueError
-                    self.x_data.append(x)
-                    self.y_data.append(y)
-                    self.x_time.append(self.x_time[i]) 
-                    self.y_time.append(self.y_time[i])
+        if not self.args.closer_data_aug_more:
+            aug_size = [self.args.aug_data_size for i in range(origin_len)]
+        else:
+            aug_size = [int(self.args.aug_data_size * i/origin_len) + 1 for i in range(origin_len)]
+
+        for i in range(origin_len):
+            for _ in range(aug_size[i]):
+                aug = augmentation('dataset')
+                if self.args.aug_method == 'f_mask':
+                    x,y = aug.freq_dropout(self.x_data[i],self.y_data[i],dropout_rate=self.args.aug_rate)
+                elif self.args.aug_method == 'f_mix':
+                    rand = float(np.random.random(1))
+                    i2 = int(rand*len(self.x_data))
+                    x,y = aug.freq_mix(self.x_data[i],self.y_data[i],self.x_data[i2],self.y_data[i2],dropout_rate=self.args.aug_rate)
+                else: 
+                    raise ValueError
+                self.x_data.append(x)
+                self.y_data.append(y)
+                self.x_time.append(self.x_time[i]) 
+                self.y_time.append(self.y_time[i])
 
     def __getitem__(self, index):
         seq_x = self.x_data[index]
